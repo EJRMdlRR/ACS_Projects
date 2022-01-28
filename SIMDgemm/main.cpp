@@ -8,8 +8,8 @@
 
 int main()
 {
-    uint32_t ROWS = 8;
-    uint32_t COLUMNS = 17;
+    uint32_t ROWS = 2;
+    uint32_t COLUMNS = 16;
     uint16_t_2d_m test(ROWS, COLUMNS);
     assert(test.get_m().size() == ROWS * COLUMNS);
 
@@ -26,8 +26,8 @@ int main()
     std::cout << "\n"
               << std::endl;
 
-    ROWS = 17;
-    COLUMNS = 4;
+    ROWS = 16;
+    COLUMNS = 2;
     uint16_t_2d_m B(ROWS, COLUMNS);
     assert(B.get_m().size() == ROWS * COLUMNS);
 
@@ -48,7 +48,7 @@ int main()
     for (uint32_t i = 1; i <= result.size(); i++)
     {
         std::cout << result[i - 1] << ' ';
-        if (((float)i / 4) - (i / 4) == 0)
+        if (((float)i / 2) - (i / 2) == 0)
             std::cout << std::endl;
     }
 }

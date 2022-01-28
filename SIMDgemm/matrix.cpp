@@ -30,7 +30,7 @@ std::vector<uint16_t> uint16_t_2d_m::mult(uint16_t_2d_m &B)
             for (pos = 0; pos + 16 <= columns; pos += 16)
             {
 
-                a = _mm256_loadu_si256((__m256i *)&(matrix[row + pos]));
+                a = _mm256_loadu_si256((__m256i *)&(matrix[(row * columns) + pos]));
                 b = _mm256_loadu_si256((__m256i *)&(B.get_t()[(col * columns) + pos]));
                 sum = _mm256_add_epi16(sum, _mm256_mullo_epi16(a, b));
             }
