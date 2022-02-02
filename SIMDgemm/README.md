@@ -13,6 +13,16 @@ This project will explore the advantages of using SIMD intrinsincs to optimize m
 * All 2D matrix dimensions are set as uint32_t, meaning it can reach a maximum size of ~4.3E9x4.2E9 elements. (Even though it is unlikely to exceed the uint16_t capacity of ~65E3x65E3)
 * AVX was chosen over SSE as it has larger vector implementations (256 bits vs 128 bits). The best implementation would likely be a combination of the two so that if you can't fill the 256 bits you don't have to fall abck on classical techniques, as is done here currently.
 
+## Compiling
+
+As the goal is speed and AVX 2 is used the following flags need to be selected in the g++ compiler.
+
+* -O3
+* -march=native
+* -mavx2
+
+```g++  -O3 -march=native -mavx2 *.cpp *.h -o main```
+
 ## Testing
 
 A more thorough testing gauntlet still needs implementation.
