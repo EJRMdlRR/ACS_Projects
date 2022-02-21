@@ -34,52 +34,22 @@ The Intel SIMD Intrinsics were easy to use, but tricky to debug. By packing the 
 ## Windows `systeminfo` Dump
 
 ```
-Host Name:                 DESKTOP-2GFU4SV
 OS Name:                   Microsoft Windows 10 Education
 OS Version:                10.0.19043 N/A Build 19043
 OS Manufacturer:           Microsoft Corporation
 OS Configuration:          Standalone Workstation
 OS Build Type:             Multiprocessor Free
-Registered Owner:          hammei
-Registered Organization:   
-Product ID:                00328-20090-00000-AA602
-Original Install Date:     10/16/2020, 3:42:47 PM
-System Boot Time:          1/22/2022, 4:25:04 PM
 System Manufacturer:       LENOVO
 System Model:              20L8S36Y00
 System Type:               x64-based PC
 Processor(s):              1 Processor(s) Installed.
                            [01]: Intel64 Family 6 Model 142 Stepping 10 GenuineIntel ~1792 Mhz
 BIOS Version:              LENOVO N22ET72W (1.49 ), 11/17/2021
-Windows Directory:         C:\WINDOWS
-System Directory:          C:\WINDOWS\system32
-Boot Device:               \Device\HarddiskVolume2
-System Locale:             en-us;English (United States)
-Input Locale:              en-us;English (United States)
-Time Zone:                 (UTC-05:00) Eastern Time (US & Canada)
 Total Physical Memory:     8,087 MB
 Available Physical Memory: 887 MB
 Virtual Memory: Max Size:  20,596 MB
 Virtual Memory: Available: 3,012 MB
 Virtual Memory: In Use:    17,584 MB
-Page File Location(s):     C:\pagefile.sys
-Domain:                    WORKGROUP
-Logon Server:              \\DESKTOP-2GFU4SV
-Hotfix(s):                 14 Hotfix(s) Installed.
-                           [01]: KB5008876
-                           [02]: KB4562830
-                           [03]: KB4577266
-                           [04]: KB4577586
-                           [05]: KB4580325
-                           [06]: KB4586864
-                           [07]: KB4589212
-                           [08]: KB4593175
-                           [09]: KB4598481
-                           [10]: KB5000736
-                           [11]: KB5009543
-                           [12]: KB5006753
-                           [13]: KB5007273
-                           [14]: KB5005699
 Network Card(s):           5 NIC(s) Installed.
                            [01]: Cisco AnyConnect Secure Mobility Client Virtual Miniport Adapter for Windows x64
                                  Connection Name: Ethernet 2
@@ -107,5 +77,4 @@ Network Card(s):           5 NIC(s) Installed.
                            [05]: Bluetooth Device (Personal Area Network)
                                  Connection Name: Bluetooth Network Connection
                                  Status:          Media disconnected
-Hyper-V Requirements:      A hypervisor has been detected. Features required for Hyper-V will not be displayed.
 ```
