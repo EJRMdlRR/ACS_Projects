@@ -48,7 +48,7 @@ Testing was performed by compressing the Canterbury Corpus, a benchmark for comp
 
 ## Summary
 
-The optimal thread ratio seemed to be 8 threads. This follows from the testing hardware having 8 logical cores. More threads would likely be better on a more performant machine.
+The optimal thread ratio seemed to be either 5 or 7 threads. This seems an odd value until one considers that separate threads are created for reading and writing, in addition to the main process thread. This means that at '5' threads there are in actuality 8 running, which concurrs neatly with the 8 logical cores on the testing hardware. This is likely the reson for the performance boost at that number. Testing on machines with different amount of cores would be necessary to prove this. At '7' threads there are a total of 10 running threads, but the performance boost here is likely due to the limit of performance obtained just in compression threads. That is to say, after 7 compression threads the overhead in managing them and distributing tasks is likely larger than the benefit obtained by parallelizing.
 
 ![Performance vs Thread Comparison](thread_perf.png)
 
