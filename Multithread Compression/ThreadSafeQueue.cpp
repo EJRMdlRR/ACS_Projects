@@ -1,4 +1,5 @@
 #include "ThreadSafeQueue.h"
+#include <iostream>
 
 void thread_safe_queue::push_back(std::tuple<int, int, char *> _aVal)
 {

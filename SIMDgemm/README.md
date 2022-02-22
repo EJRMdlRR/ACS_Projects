@@ -31,50 +31,43 @@ A more thorough testing gauntlet still needs implementation.
 
 The Intel SIMD Intrinsics were easy to use, but tricky to debug. By packing the data and sending it off to registers it's difficult at times to see where the error lies.
 
-## Windows `systeminfo` Dump
+## Hardware Info
+
+### Windows `Get-ComputerInfo` Dump
 
 ```
-OS Name:                   Microsoft Windows 10 Education
-OS Version:                10.0.19043 N/A Build 19043
-OS Manufacturer:           Microsoft Corporation
-OS Configuration:          Standalone Workstation
-OS Build Type:             Multiprocessor Free
-System Manufacturer:       LENOVO
-System Model:              20L8S36Y00
-System Type:               x64-based PC
-Processor(s):              1 Processor(s) Installed.
-                           [01]: Intel64 Family 6 Model 142 Stepping 10 GenuineIntel ~1792 Mhz
-BIOS Version:              LENOVO N22ET72W (1.49 ), 11/17/2021
-Total Physical Memory:     8,087 MB
-Available Physical Memory: 887 MB
-Virtual Memory: Max Size:  20,596 MB
-Virtual Memory: Available: 3,012 MB
-Virtual Memory: In Use:    17,584 MB
-Network Card(s):           5 NIC(s) Installed.
-                           [01]: Cisco AnyConnect Secure Mobility Client Virtual Miniport Adapter for Windows x64
-                                 Connection Name: Ethernet 2
-                                 DHCP Enabled:    No
-                                 IP address(es)
-                                 [01]: 128.213.86.221
-                                 [02]: fe80::98b4:d890:b1b2:8a3a
-                                 [03]: 2620:0:2820:bc::283
-                           [02]: Hyper-V Virtual Ethernet Adapter
-                                 Connection Name: vEthernet (WSL)
-                                 DHCP Enabled:    No
-                                 IP address(es)
-                                 [01]: 172.26.176.1
-                                 [02]: fe80::f:498f:e661:5214
-                           [03]: Intel(R) Ethernet Connection (4) I219-V
-                                 Connection Name: Ethernet
-                                 Status:          Media disconnected
-                           [04]: Intel(R) Dual Band Wireless-AC 8265
-                                 Connection Name: Wi-Fi
-                                 DHCP Enabled:    Yes
-                                 DHCP Server:     192.168.1.1
-                                 IP address(es)
-                                 [01]: 192.168.1.14
-                                 [02]: fe80::e842:325:a783:5a26
-                           [05]: Bluetooth Device (Personal Area Network)
-                                 Connection Name: Bluetooth Network Connection
-                                 Status:          Media disconnected
+BiosCharacteristics                                     : {7, 9, 11, 12...}
+BiosFirmwareType                                        : Uefi
+BiosManufacturer                                        : LENOVO
+BiosName                                                : N22ET72W (1.49 )
+CsManufacturer                                          : LENOVO
+CsNetworkAdapters                                       : {Ethernet 2, vEthernet (Default Switch), Ethernet, Wi-Fi...}
+CsNetworkServerModeEnabled                              : True
+CsNumberOfLogicalProcessors                             : 8
+CsNumberOfProcessors                                    : 1
+CsProcessors                                            : {Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz}
+CsRoles                                                 : {LM_Workstation, LM_Server, NT}
+CsStatus                                                : OK
+CsSystemFamily                                          : ThinkPad T480s
+CsSystemType                                            : x64-based PC
+CsTotalPhysicalMemory                                   : 8480333824
+CsPhyicallyInstalledMemory                              : 8388608
+CsWakeUpType                                            : PowerSwitch
+CsWorkgroup                                             : WORKGROUP
+OsType                                                  : WINNT
+OsVersion                                               : 10.0.19043
+OsBuildType                                             : Multiprocessor Free
+OsCodeSet                                               : 1252
+OsForegroundApplicationBoost                            : Maximum
+OsTotalVisibleMemorySize                                : 8281576
+OsFreePhysicalMemory                                    : 969924
+OsTotalVirtualMemorySize                                : 21079540
+OsFreeVirtualMemory                                     : 2920824
+OsInUseVirtualMemory                                    : 18158716
+OsTotalSwapSpaceSize                                    :
+OsSizeStoredInPagingFiles                               : 12797964
+OsFreeSpaceInPagingFiles                                : 9408100
+OsMaxNumberOfProcesses                                  : 4294967295
+OsMaxProcessMemorySize                                  : 137438953344
+OsArchitecture                                          : 64-bit
 ```

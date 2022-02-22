@@ -25,7 +25,6 @@ void file_reader(thread_safe_queue *blocks, char *f, int *read_done)
     }
     in.close();
     (*read_done) = 1;
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 void file_writer(std::vector<char *> *compressed_blocks, std::vector<int> *compressed_block_sizes, std::string file, long unsigned int *total_blocks)
@@ -41,7 +40,7 @@ void file_writer(std::vector<char *> *compressed_blocks, std::vector<int> *compr
         out.write((*compressed_blocks)[vect_idx], (*compressed_block_sizes)[vect_idx]);
         (*compressed_block_sizes)[vect_idx] = 0;
         idx++;
-        vect_idx = idx % (*compressed_block_sizes).size();
+        vect_idx = idx % (compressed_block_sizes->size());
     }
     out.close();
 }
@@ -49,7 +48,7 @@ void file_writer(std::vector<char *> *compressed_blocks, std::vector<int> *compr
 void compressor(thread_safe_queue *blocks, std::vector<char *> *compressed_blocks, std::vector<int> *compressed_block_sizes, int *read_done, unsigned int *NTHREADS, size_t *C_BLOCK)
 {
     std::tuple<int, int, char *> block;
-    while (blocks->size() || !read_done)
+    while (blocks->size() || !(*read_done))
     {
         if (!(blocks->pop_front(block)))
         {
@@ -59,6 +58,7 @@ void compressor(thread_safe_queue *blocks, std::vector<char *> *compressed_block
         while ((*compressed_block_sizes)[pos] != 0)
         {
         }
+
         size_t compressedSize = ZSTD_compress((*compressed_blocks)[pos], *C_BLOCK, std::get<2>(block), std::get<0>(block), 5);
         (*compressed_block_sizes)[pos] = compressedSize;
     }
@@ -81,13 +81,14 @@ int main(int argc, char *argv[])
 
     std::thread reader(file_reader, &blocks, argv[1], &read_done);
 
-    unsigned int NTHREADS = 8;
+    unsigned int NTHREADS = 16;
     std::string file = (std::string)argv[1];
     file = file.substr(0, file.find('.')) + ".zst";
 
     if (argc == 4)
     {
         NTHREADS = std::stoi(argv[3]);
+        file = argv[2];
     }
     else if (argc == 3 || argc == 2)
     {
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
     size_t C_BLOCK = ZSTD_compressBound(BLOCK);
     std::vector<char *> compressed_blocks;
     std::vector<int> compressed_block_sizes(NTHREADS * 16, 0);
-    compressed_blocks.reserve(32);
+    compressed_blocks.reserve(NTHREADS * 16);
     for (unsigned int i = 0; i < NTHREADS * 16; ++i)
     {
         compressed_blocks.push_back(new char[C_BLOCK]);
@@ -118,13 +119,12 @@ int main(int argc, char *argv[])
     std::thread writer(file_writer, &compressed_blocks, &compressed_block_sizes, file, &total_blocks);
     // Read and compress file
     std::vector<std::thread> compressors;
-    for (unsigned int i = 0; i < NTHREADS; i++)
+    for (unsigned int i = 0; i < NTHREADS * 16; i++)
     {
         compressors.push_back(std::thread(compressor, &blocks, &compressed_blocks, &compressed_block_sizes, &read_done, &NTHREADS, &C_BLOCK));
     }
-
     reader.join();
-    for (unsigned int i = 0; i < NTHREADS; i++)
+    for (unsigned int i = 0; i < NTHREADS * 16; i++)
     {
         compressors[i].join();
     }
