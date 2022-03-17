@@ -30,6 +30,8 @@ There are several unusual readings in the data. It is difficult to tell whether 
 
 Out of the things we can note is that there is no drastic difference between random or sequentiall accesses, nor is there one depending on whether SSE2 or AVX2 is enabled. It appears that for memory these are effectively the same. What is consistent amongst them is that as bandwidth increases latency slowly increases, until a certain point where it drastically jumps. This point seems to be related to memory access size primarily and lies at ~15K MB/s at 64B, ~12.5K MB/s at 128B, ~11K MB/s at 256B, and ~10K MB/s at 512B. This is probably due to the fact that as each  individual operation increases in size the amount of possible operations per second, i.e. optimal bandwidth, decreases.
 
+Without testing enterprise drives the reason for their low-bandwidth reporting can only be intuited. A likely guess is that they don't have the leeway to increase latency at the cost of higher bandwidth. Instead that is the maximum bandwidth that achieves some internal latency spec they have to stay below.
+
 ## Hardware Info
 
 ### Windows `Get-ComputerInfo` Dump
