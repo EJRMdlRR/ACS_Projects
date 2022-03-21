@@ -1,4 +1,4 @@
-# Multithread Compression Susing ZSTD Library
+# Multithread Compression Using ZSTD Library
 
 ## Introduction
 
