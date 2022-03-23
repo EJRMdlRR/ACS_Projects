@@ -2,6 +2,7 @@ import pathlib
 import argparse
 import pprint
 import collections
+import json
 
 
 class NodeTree:
@@ -65,7 +66,10 @@ if __name__ == "__main__":
     for filename in args.filename:
         with filename.open() as file:
             data.extend(file.read().split(args.delimiter))
+    data = [item for item in data if item != ""]
     freq = collections.Counter(data)
+    print(f"# of unique items: {len(freq)}")
+    print(f"Total items: {len(data)}")
 
     nodes = list(freq.items())
 
@@ -79,9 +83,10 @@ if __name__ == "__main__":
 
     huffman_code = encode(nodes[0][0])
 
-    print(" Char | Freq | Huffman code ")
-    print("----------------------")
-    for char in sorted(freq.keys(), key=freq.get, reverse=True):
-        print(f"{char:10s} | {freq[char]:4} | {huffman_code[char]:>11s}")
-
     gain(freq, huffman_code)
+
+    with open("test.json", "r") as cpp:
+        data = json.load(cpp)
+    data = {k: bin(v)[2:] for k, v in data.items()}
+
+    gain(freq, data)
