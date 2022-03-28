@@ -6,12 +6,12 @@ if __name__ == '__main__':
 
     nThreads = df.groupby(by='nThreads').mean()
     bar = nThreads.plot.bar(y='Time Per KB [s/KB]', rot=0);
-    bar.figure.savefig('thread_perf.png')
+    bar.figure.savefig('thread_perf_lvl_1.png')
 
     ratio = df.groupby(by='Filetype').mean()
     bar = ratio.plot.bar(y='Ratio', rot=0);
-    bar.figure.savefig('type_ratio.png')
+    bar.figure.savefig('type_ratio_lvl_1.png')
 
     ratio = df.groupby(by='Filetype').mean()
     bar = ratio.plot.bar(y='Time Per KB [s/KB]', rot=0);
-    bar.figure.savefig('type_perf.png')
+    bar.figure.savefig('type_perf_lvl_1.png')

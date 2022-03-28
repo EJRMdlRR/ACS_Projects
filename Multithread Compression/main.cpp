@@ -59,7 +59,7 @@ void compressor(thread_safe_queue *blocks, std::vector<char *> *compressed_block
         {
         }
 
-        size_t compressedSize = ZSTD_compress((*compressed_blocks)[pos], *C_BLOCK, std::get<2>(block), std::get<0>(block), 5);
+        size_t compressedSize = ZSTD_compress((*compressed_blocks)[pos], *C_BLOCK, std::get<2>(block), std::get<0>(block), 1);
         (*compressed_block_sizes)[pos] = compressedSize;
     }
 }

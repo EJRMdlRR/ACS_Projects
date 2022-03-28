@@ -22,12 +22,16 @@ if __name__ == "__main__":
     }
     for file in cantrbry:
         print(f"Compressing {str(file)}")
-        for nThreads in range(2, 16):
-            for attempt in range(20):
-                command = f'subprocess.run(args=["./main.o", "{file}", "{file.with_suffix(".zst")}", "{nThreads}"], timeout=60)'
-                runtime = timeit.timeit(
-                    stmt=command, setup="import subprocess", number=1
-                )
+        for nThreads in range(2, 18):
+            print(f'{nThreads}')
+            for attempt in range(1000):
+                command = f'subprocess.run(args=["./main.o", "{file}", "{file.with_suffix(".zst")}", "{nThreads}"], timeout=2)'
+                try:
+                    runtime = timeit.timeit(
+                        stmt=command, setup="import subprocess", number=1
+                    )
+                except Exception:
+                   continue
                 table["File"].append(str(file))
                 table["Filetype"].append(str(file.suffix))
                 table["nThreads"].append(nThreads)
@@ -41,5 +45,8 @@ if __name__ == "__main__":
                 )
                 table["Time [s]"].append(runtime)
                 table["Time Per KB [s/KB]"].append(1024 * runtime / file.stat().st_size)
+        print(f'Done with {str(file)}')
+    print(f'Generating DataFrame')
     df = pd.DataFrame(data=table)
-    df.to_csv(pathlib.Path().cwd() / "data.csv")
+    print(f'Writing DataFrame')
+    df.to_csv(pathlib.Path().cwd() / "data_lvl_1.csv")
