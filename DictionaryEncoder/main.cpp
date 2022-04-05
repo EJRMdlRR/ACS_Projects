@@ -2,61 +2,65 @@
 #include <array>
 #include <algorithm>
 #include <chrono>
+#include <filesystem>
 
 #include "huffman.h"
 
-std::string b95_encode(std::uint32_t value)
+typedef std::string str;
+typedef std::uint32_t uint32;
+
+str b128_encode(uint32 value)
 {
-    std::array<std::uint32_t, 4> positions{81450625, 857375, 9025, 95};
-    std::string new_encoding = "";
+    std::array<uint32, 4> positions{268435456, 2097152, 16384, 128};
+    str new_encoding = "";
 
     for (auto &position : positions)
     {
-        std::uint32_t div = value / position;
+        uint32 div = value / position;
         if (div >= 1)
         {
-            new_encoding += char(32 + div);
+            new_encoding += (char)div;
             value -= position * div;
         }
     }
 
-    new_encoding += char(32 + value);
+    new_encoding += (char)value;
     new_encoding[0] = new_encoding[0] | 0b10000000;
 
     return new_encoding;
 }
 
-std::uint32_t b95_decode(std::string coded_word)
+uint32 b128_decode(str coded_word)
 {
-    std::array<std::uint32_t, 5> positions{{81450625, 857375, 9025, 95, 1}};
-    std::uint32_t value = 0;
+    std::array<uint32, 5> positions{268435456, 2097152, 16384, 128, 1};
+    uint32 value = 0;
     std::uint8_t MSB = coded_word.size();
     coded_word[0] = coded_word[0] & 0b01111111;
 
     for (std::uint8_t letter = 0; letter < MSB; letter++)
     {
-        value += ((int)coded_word[letter] - 32) * positions[MSB - letter];
+        value += (uint32)coded_word[letter] * positions[MSB - letter];
     }
 
     return value;
 }
 
-std::unordered_map<std::string, std::string> b95_compress(const std::unordered_map<std::string, std::uint32_t> &coding)
+std::unordered_map<str, str> b128_compress(const std::unordered_map<str, uint32> &coding)
 {
-    std::unordered_map<std::string, std::string> new_coding;
+    std::unordered_map<str, str> new_coding;
     for (auto &word : coding)
     {
-        std::string new_code = b95_encode(word.second);
+        str new_code = b128_encode(word.second);
         new_coding[word.first] = new_code;
     }
 
     return new_coding;
 };
 
-void error_checks(const std::uint32_t &argc,
+void error_checks(const uint32 &argc,
                   const char **argv)
 {
-    std::string op = argv[1];
+    str op = argv[1];
     if (op == "-h" || op == "--help" || op == "HELP")
     {
         std::cout << "USAGE: " << argv[0] << " ENCODE/DECODE"
@@ -74,7 +78,7 @@ void error_checks(const std::uint32_t &argc,
         std::cout << "Too many arguments. See help with \"HELP\" for proper usage." << std::endl;
         exit(1);
     }
-    else if (std::string(op) != "ENCODE" && op != "DECODE")
+    else if (str(op) != "ENCODE" && op != "DECODE")
     {
         std::cout << "Only valid actions are \"ENCODE\" or \"DECODE\". Not " << op << std::endl;
         exit(1);
@@ -91,11 +95,10 @@ void error_checks(const std::uint32_t &argc,
     }
 }
 
-void load_and_analyze(const std::string &filename,
-                      std::unordered_map<std::string, std::uint32_t> &frequencies)
+void load_and_analyze(const str &filename,
+                      std::unordered_map<str, uint32> &frequencies)
 {
-    std::cout << ":: LOADING FILE \"" << filename << "\" ::" << std::endl;
-    std::string line;
+    str line;
     std::ifstream datafile(filename);
     while (datafile >> line)
     {
@@ -104,30 +107,28 @@ void load_and_analyze(const std::string &filename,
     datafile.close();
 }
 
-void huffman_to_json(const std::string &prefix,
-                     const std::unordered_map<std::string, std::string> &code)
+str write_encoding(const str &prefix,
+                   const std::unordered_map<str, str> &code)
 {
-    std::cout << ":: WRITING ENCODING KEY ::" << std::endl;
-
-    std::ofstream file(prefix + "_encoded.tsv");
+    std::ofstream file(prefix + "_encoded.enc");
     for (auto &word : code)
     {
-        std::string temp = word.second;
-        temp[0] = temp[0] & 0b01111111;
-        file << temp << "\t" << word.first << "\n";
+        str temp = word.first;
+        temp[0] = temp[0] | 0b10000000;
+        file << word.second << temp;
     }
     file.close();
+    return prefix + "_encoded.enc";
 }
 
-void write_coded(const std::string &filename,
-                 const std::unordered_map<std::string, std::string> &code)
+str write_encoded(const str &filename,
+                  const std::unordered_map<str, str> &code)
 {
-    std::cout << ":: WRITING ENCODED FILE ::" << std::endl;
-    std::string line;
+    str line;
     std::ifstream datafile(filename);
 
-    std::string prefix = filename.substr(0, filename.find("."));
-    std::ofstream outfile(prefix + "_encoded.txt");
+    str prefix = filename.substr(0, filename.find("."));
+    std::ofstream outfile(prefix + "_encoded.bin");
 
     while (datafile >> line)
     {
@@ -136,41 +137,52 @@ void write_coded(const std::string &filename,
 
     outfile.close();
     datafile.close();
+    return prefix + "_encoded.bin";
 }
 
-std::unordered_map<std::string, std::string> load_coding(const std::string &prefix)
+std::unordered_map<str, str> load_coding(const str &prefix)
 {
-    std::cout << ":: LOADING CODE ::" << std::endl;
-    std::unordered_map<std::string, std::string> code;
-    std::string line;
-    std::string word;
+    std::unordered_map<str, str> code;
+    str word = "", temp = "";
+    char ch;
 
-    std::ifstream codefile(prefix + ".tsv");
+    std::ifstream codefile(prefix + ".enc");
 
-    while (std::getline(codefile, line))
+    while (codefile >> std::noskipws >> ch)
     {
-        word = line.substr(0, line.find('\t'));
-        line = line.erase(0, line.find('\t') + 1);
-        code[word] = line;
+        if (ch & 0b10000000 and word == "")
+        {
+            word = temp;
+            temp = ch & 0b01111111;
+        }
+        else if (ch & 0b10000000)
+        {
+            code[word] = temp;
+            word = temp = "";
+            temp = ch & 0b01111111;
+        }
+        else
+        {
+            temp += ch;
+        }
     }
-
+    code[word] = temp;
     codefile.close();
 
     return code;
 }
 
-void decode(const std::string &filename,
-            const std::string &prefix,
-            const std::unordered_map<std::string, std::string> &code)
+void decode(const str &filename,
+            const str &prefix,
+            const std::unordered_map<str, str> &code)
 {
     char ch;
-    std::string word = "";
-    std::string temp = "";
+    str word = "";
+    str temp = "";
 
     std::ifstream datafile(filename);
     std::ofstream outfile(prefix + "_decoded.txt");
 
-    std::cout << ":: DECODING ::" << std::endl;
     while (datafile >> std::noskipws >> ch)
     {
         if (ch & 0b10000000 && word != "")
@@ -184,7 +196,7 @@ void decode(const std::string &filename,
             word += ch;
     }
     outfile << code.at(word) << std::endl;
-    
+
     outfile.close();
     datafile.close();
 }
@@ -193,9 +205,9 @@ int main(int argc, const char **argv)
 {
     error_checks(argc, argv);
 
-    const std::string op = argv[1];
-    const std::string filename = argv[2];
-    std::unordered_map<std::string, std::uint32_t> frequencies;
+    const str op = argv[1];
+    const str filename = argv[2];
+    std::unordered_map<str, uint32> frequencies;
 
     if (op == "ENCODE")
     {
@@ -207,26 +219,30 @@ int main(int argc, const char **argv)
         std::cout << "Dataset Analysis: " << duration.count() * 1e-6 << "s" << std::endl;
 
         start = std::chrono::high_resolution_clock::now();
-        std::unordered_map<std::string, std::string> code = b95_compress(build_tree(frequencies));
+        std::unordered_map<str, str> code = b128_compress(build_tree(frequencies));
         stop = std::chrono::high_resolution_clock::now();
 
         duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
         std::cout << "Encoding: " << duration.count() * 1e-6 << "s" << std::endl;
 
-        std::string prefix = filename.substr(0, filename.find("."));
+        str prefix = filename.substr(0, filename.find("."));
 
         start = std::chrono::high_resolution_clock::now();
-        huffman_to_json(prefix, code);
-        write_coded(filename, code);
+        str encoding_file = write_encoding(prefix, code);
+        str encoded_file = write_encoded(filename, code);
         stop = std::chrono::high_resolution_clock::now();
         duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
         std::cout << "Writing Output: " << duration.count() * 1e-6 << "s" << std::endl;
+
+        std::cout << filename << " size = " << std::filesystem::file_size(std::filesystem::current_path() / filename) << '\n';
+        std::cout << encoding_file << " size = " << std::filesystem::file_size(std::filesystem::current_path() / encoding_file) << '\n';
+        std::cout << encoded_file << " size = " << std::filesystem::file_size(std::filesystem::current_path() / encoded_file) << '\n';
     }
-    else if (std::string(argv[1]) == "DECODE")
+    else if (str(argv[1]) == "DECODE")
     {
-        std::string prefix = filename.substr(0, filename.find('.'));
+        str prefix = filename.substr(0, filename.find('.'));
         auto start = std::chrono::high_resolution_clock::now();
-        std::unordered_map<std::string, std::string> code = load_coding(prefix);
+        std::unordered_map<str, str> code = load_coding(prefix);
         auto stop = std::chrono::high_resolution_clock::now();
 
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);

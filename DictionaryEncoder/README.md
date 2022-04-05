@@ -17,17 +17,19 @@ After research, a full 256 bit encoding was not viable, largely because there is
 
 A bug arose late into development as when converting bit strings to integers the leading zeroes were unknowingly being discarded. To fix this all huffman codes were set to start with a leading 1, this means that they are all 1 bit larger as a penalty, however.
 
+After realizing using the 8th bit as a flag meant it would not encode into ASCII the implementation was changed to a full 128 bit encoding, where the 8th bit denotes the start of a word in both the encoded binary file and the map of codes to words.
+
 ## Results
 
 | File               | Analysis  | Encoding  | Writing   | Code Loading | Decoding  | Total Elements | Unique Elements | Repetition Ratio | Old Size   | New Size  | Improvement |
 |--------------------|-----------|-----------|-----------|--------------|-----------|----------------|-----------------|------------------|------------|-----------|-------------|
-| Small-Size-Column  | 0.026281s | 0.001252s | 0.037308s | 0.000634s    | 0.000634s | 119649         | 1000            | 119.65           | 932 KB     | 234 KB    | 3.98x       |
-| Medium-Size-Column | 0.335359s | 0.027797s | 0.368561s | 0.005207s    | 4.00054s  | 1199755        | 10000           | 119.98           | 9,382 KB   | 3,282 KB  | 2.86x       |
-| Large-Size-Column  | 16.1509s  | 0.728605s | 19.807s   | 0.192698s    | 86.707s   | 23574717       | 195427          | 120.63           | 184,132 KB | 68,182 KB | 2.70x       |
+| Small-Size-Column  | 0.026281s | 0.001252s | 0.037308s | 0.000634s    | 0.000634s | 119649         | 1000            | 119.65           | 932 KB     | 243 KB    | 3.84x       |
+| Medium-Size-Column | 0.27856s  | 0.011645s | 0.340774s | 0.005207s    | 4.00054s  | 1199755        | 10000           | 119.98           | 9,382 KB   | 2,871 KB  | 3.27x       |
+| Large-Size-Column  | 16.1509s  | 0.728605s | 19.807s   | 0.192698s    | 86.707s   | 23574717       | 195427          | 120.63           | 184,132 KB | 70,791 KB | 2.60x       |
 
 ## Conclusion
 
-Knowing what data is to be stored ahead of time is invaluable, but choosing the proper encoding equally so. When the codes where being stored as bit strings the number of unique words meant that at times the code was longer than the word. Furthermore, although the base95 encoding was chose to stay faithful to ASCII coding and thus ensure readability on as many machines as possible, it leaves almost a quarter of the 7-bit space wasted. More research needs to be done on whether including control characters would corrupt the file.
+Knowing what data is to be stored ahead of time is invaluable, but choosing the proper encoding equally so. When the codes where being stored as bit strings the number of unique words meant that at times the code was longer than the word. Furthermore, although the base128 encoding uses all 7 bits optimally, that last bit constitutes double the possible encodings being wasted in each byte. A strategy that avoids the use of this bit as a flag would then increase efficiency significantly. Finding a way to preserve leading zeros in the encoding without adding a leading one would also improve efficiency.
 
 ## Hardware Info
 
