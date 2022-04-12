@@ -2,4 +2,4 @@
 *.out
 *.code-workspace
 
-*Large-Size-Column.txt
+*Large*

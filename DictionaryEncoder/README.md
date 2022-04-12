@@ -19,6 +19,10 @@ A bug arose late into development as when converting bit strings to integers the
 
 After realizing using the 8th bit as a flag meant it would not encode into ASCII the implementation was changed to a full 128 bit encoding, where the 8th bit denotes the start of a word in both the encoded binary file and the map of codes to words.
 
+### Compilation
+
+Compiled with `g++ -Wall -Werror -std=c++17 -O3 -march=native *.cpp -o main`
+
 ## Results
 
 | File               | Analysis  | Encoding  | Writing   | Code Loading | Decoding  | Total Elements | Unique Elements | Repetition Ratio | Old Size   | New Size  | Improvement |
